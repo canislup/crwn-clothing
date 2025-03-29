@@ -4,6 +4,7 @@ import {
   signInWithRedirect,
   signInWithPopup,
   GoogleAuthProvider,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
@@ -20,22 +21,27 @@ const firebaseConfig = {
 // Initialize Firebase App
 const firebaseApp = initializeApp(firebaseConfig);
 
-const provider = new GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider();
 
-provider.setCustomParameters({
+googleProvider.setCustomParameters({
   prompt: "select_account",
 });
 
 export const auth = getAuth();
 
-export const signInWithGooglePopUp = () => signInWithPopup(auth, provider);
+export const signInWithGooglePopUp = () =>
+  signInWithPopup(auth, googleProvider);
 
 export const db = getFirestore();
 
-export const createUserDocumentFromAuth = async (userAuth) => {
+export const createUserDocumentFromAuth = async (
+  userAuth,
+  aditionalInformation = {}
+) => {
+  if (!userAuth) return;
   try {
     const userDocRef = doc(db, "users", userAuth.uid);
-    console.log("This is the user Doc ref: ", userDocRef);
+    //console.log("This is the user Doc ref: ", userDocRef);
 
     const userSnapshot = await getDoc(userDocRef);
 
@@ -49,6 +55,7 @@ export const createUserDocumentFromAuth = async (userAuth) => {
           displayName,
           email,
           createdAt,
+          ...aditionalInformation,
         });
       } catch (error) {
         console.log("Error creating user: ", error.message);
@@ -58,6 +65,26 @@ export const createUserDocumentFromAuth = async (userAuth) => {
     // IF USER EXISTS ALREADY, RETURN THE USER
     return userDocRef;
   } catch (error) {
-    // console.log(error);
+    throw error;
+  }
+};
+
+export const createAuthUserWithEmailAndPassword = async (
+  email,
+  password,
+  displayName
+) => {
+  if (!email || !password) return;
+
+  try {
+    const authUser = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    console.log("User Authenticated Sucessfully", authUser);
+    return authUser;
+  } catch (error) {
+    throw error;
   }
 };
