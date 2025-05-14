@@ -1,13 +1,13 @@
 import { useState } from "react";
 
+import FormInput from "../form-input/form-input.component";
+import Button from "../button/button.component";
+
 import {
   createUserDocumentFromAuth,
   signInAuthUserWithEmailAndPassword,
   signInWithGooglePopUp,
 } from "../../utils/firebase/firebase.utils";
-
-import FormInput from "../form-input/form-input.component";
-import Button from "../button/button.component";
 
 import "./sign-in-form.styles.scss";
 
@@ -32,8 +32,8 @@ const SignInForm = () => {
     // Creating the user
     try {
       // Authentication
-      const user = await signInAuthUserWithEmailAndPassword(email, password);
-      console.log("user: ", user);
+      await signInAuthUserWithEmailAndPassword(email, password);
+
       // Reseting the fields
       resetSignUpFields();
     } catch (error) {
@@ -52,11 +52,7 @@ const SignInForm = () => {
 
   const signInWithGoogle = async () => {
     try {
-      const { user } = await signInWithGooglePopUp();
-      //console.log("This is the user object: ", user);
-
-      await createUserDocumentFromAuth(user);
-      //console.log("This is the returned user Doc Ref: ", userDocRef);
+      await signInWithGooglePopUp();
     } catch (error) {
       const errorType = error.code;
       if (errorType === "auth/invalid-credential")
@@ -83,7 +79,6 @@ const SignInForm = () => {
           onChange={handleChange}
           name="email"
           value={email}
-          otherClases="sing-in-field"
         />
 
         <FormInput
@@ -93,7 +88,6 @@ const SignInForm = () => {
           onChange={handleChange}
           name="password"
           value={password}
-          otherClases="sing-in-field"
         />
 
         <div className="buttons-container">

@@ -31,10 +31,6 @@ $main-color: black;
     &:focus ~ .form-input-label {
       @include shrinkLabel();
     }
-
-    &.sing-in-field {
-      background-color: azure;
-    }
   }
 
   input[type="password"] {
